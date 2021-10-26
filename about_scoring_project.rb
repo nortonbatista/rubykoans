@@ -30,7 +30,36 @@ require File.expand_path(File.dirname(__FILE__) + '/neo')
 # Your goal is to write the score method.
 
 def score(dice)
-  # You need to write this method
+  def sum_roll(roll)
+    set = roll[:quantity] / 3
+    leftover = roll[:quantity] % 3
+    
+    case roll[:value]
+    when 1
+      1000 * set + leftover * 100
+    when 5
+      500 * set + leftover * 50
+    else
+      roll[:value] * 100 * set
+    end
+  end
+
+  result = dice.inject([]) do |accumulator, current|
+    found = accumulator.find_index do |element|
+      element[:value] == current
+    end
+    
+    if found
+      accumulator[found][:quantity] += 1
+      accumulator
+    else
+      accumulator << { :value => current, :quantity => 1 }
+    end
+  end
+
+  result.inject(0) do |accumulator, current|
+    accumulator += sum_roll(current)
+  end
 end
 
 class AboutScoringProject < Neo::Koan
